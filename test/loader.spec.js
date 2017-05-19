@@ -3,6 +3,7 @@
 var path = require('path');
 var expect = require('chai').expect;
 var webpackRunner = require('./webpack-runner');
+var Lint = require('tslint');
 
 describe('TslintLoader', function() {
   it('should lint typescript files and output warning', function() {
@@ -97,6 +98,31 @@ describe('TslintLoader', function() {
   it('should use type checked rules when forced to', function() {
     return webpackRunner({
       typeCheck: true,
+      configuration: {
+        rules: {
+          'no-for-in-array': true
+        }
+      }
+    }, {
+      entry: {
+        engine: path.resolve(__dirname, 'app', 'for-in-array.ts')
+      }
+    }).then(function(stats) {
+      expect(stats.hasErrors()).to.be.false;
+      expect(stats.hasWarnings()).to.be.true;
+
+      var result = stats.toJson();
+
+      expect(result.warnings).to.eql([
+        './test/app/for-in-array.ts\n[4, 1]: for-in loops over arrays are forbidden. Use for-of or array.forEach instead.\n'
+      ]);
+    });
+  });
+
+  it('should use type checked rules when provided a program', function() {
+    return webpackRunner({
+      typeCheck: true,
+      program: Lint.Linter.createProgram(path.resolve(__dirname, 'tsconfig.json')),
       configuration: {
         rules: {
           'no-for-in-array': true

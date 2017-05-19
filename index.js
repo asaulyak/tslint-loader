@@ -62,8 +62,11 @@ function lint(webpackInstance, input, options) {
 
   var program;
   if (options.typeCheck) {
-    var tsconfigPath = resolveFile(options.tsConfigFile);
-    program = Lint.Linter.createProgram(tsconfigPath);
+    if (!options.program) {
+      var tsconfigPath = resolveFile(options.tsConfigFile);
+      options.program = Lint.Linter.createProgram(tsconfigPath);
+    }
+    program = options.program;
   }
 
   var linter = new Lint.Linter(lintOptions, program);
