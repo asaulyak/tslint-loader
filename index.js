@@ -61,11 +61,9 @@ function lint(webpackInstance, input, options) {
   var bailEnabled = (webpackInstance.options.bail === true);
 
   var program;
-  if (options.typeCheck) {
-    if (!options.program) {
-      var tsconfigPath = resolveFile(options.tsConfigFile);
-      program = Lint.Linter.createProgram(tsconfigPath);
-    }
+  if (options.typeCheck && !options.program) {
+    var tsconfigPath = resolveFile(options.tsConfigFile);
+    program = Lint.Linter.createProgram(tsconfigPath);
   }
 
   var linter = new Lint.Linter(lintOptions, program);
